@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include "themes.h"
 
-#define N 250       // Change this for more / less digits
+#define N 50        // Change this for more / less digits
 
 void set_theme(enum ColorTheme theme) {
     if (_cpu == CGB_TYPE) {
@@ -73,38 +73,33 @@ void init() {
 uint16_t buf[len];
 uint16_t n = 0;
 uint16_t p = 0;
-uint16_t q = 0;
-uint16_t x = 0;
 
 void spigot_algo() {
     for (int i = 0; i < len; i++) buf[i] = 2;
 
-    for (int j = 0; j < N; ++j) {
-        q = 0;
-        for (int i = len-1; i >= 0; --i) {
-            x = 10 * buf[i] + q * (i + 1);
-            buf[i] = x % (2 * (i + 1) - 1);
-            q = x / (2 * (i + 1) - 1);
+    for (int i = 0; i < N; i++) {
+        uint16_t q = 0;
+        for (int i = len-1; i >= 0; i--) {
+            uint16_t x = 10 * buf[i] + q * (i + 1);
+            uint16_t y = (i << 1) + 1;
+            buf[i]  = x % y;
+            q       = x / y;
         }
         buf[0] = q % 10;
-        q = q / 10;
+        q /= 10;
 
         if (q == 9) {
-            ++n;
+            n++;
         } else if (q == 10) {
-            if (j != 0) {
+            if (i > 1) {
                 printf("%d", p + 1);
-                for (int k = 0; k < n; ++k) printf("0");
+                for (int k = 0; k < n; k++) printf("0");
             }
             p, n = 0;
         } else {
+            if (i > 1) printf("%d", p);
             p = q;
-            if (j != 0) {
-                printf("%d", p);
-                if (n != 0) {
-                    for (int k = 0; k < n; ++k) printf("9");
-                }
-            }
+            for (int k = 0; k < n; k++) printf("9");
             n = 0;
         }
     }
